@@ -1,0 +1,128 @@
+openapi: 3.0.1
+info:
+  title: SWAGGER API
+  description: Proyecto de Ejemplo de Documentacion Open Api
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /v1/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Inicia Sesion del usuario
+      description: EndPoint de inicio de sesion de los usuarios registrados en nuestra aplicacion
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user-dto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jwt-dto'
+              example:
+                access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                expires_in: 50000
+                token_type: bearer
+        '400':
+          description: Solicitud no Valida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-message-dto'
+              example:
+                code: 300
+                message: 'Error de validación: Debe enviar la clave [password]; Debe enviar un correo electronico [email]'
+        '401':
+          description: Sin Autorizacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-message-dto'
+              example:
+                code: 401
+                message: Acceso No Autorizado
+        '409':
+          description: Conflicto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-message-dto'
+              example:
+                code: 409
+                message: Usuario [user@dominio.ext] Bloqueado
+  /v1/main/ping:
+    get:
+      tags:
+        - Main
+      summary: EndPoint para validar que servicio esta vivo
+      description: Main
+      operationId: ping
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                Ejemplo:
+                  description: Ejemplo
+                  value: pong...
+components:
+  schemas:
+    user-dto:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+          description: correo electronico del usuario
+        password:
+          type: string
+          description: clave del usuario
+      example:
+        email: user@dominio.ext
+        password: '1234'
+    error-message-dto:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: codigo de error
+          format: int32
+        message:
+          type: string
+          description: mensaje de error
+      example:
+        code: 300
+        message: 'Error de validación: Debe enviar la clave [password]; Debe enviar un correo electronico [email]'
+    jwt-dto:
+      required:
+        - access_token
+        - expires_in
+        - token_type
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: token de acceso
+        expires_in:
+          type: integer
+          description: tiempo de expiracion del token
+          format: int64
+        token_type:
+          type: string
+          description: tipo de token [bearer]
+      example:
+        access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        expires_in: 50000
+        token_type: bearer
